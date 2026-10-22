@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our First Server</title>
+</head>
+<body>
+    <div>
+        <h1>Our First Server</h1>
+        <button type="button" onclick=getStudents()>Click Here to See Students List</button>
+    </div>
+    <div>
+        <p id="results"></p>
+    </div>
+    <div>
+        <h2>Register Student</h2> 
+        <label for="studentId">Student ID:</label> 
+        <input type="number" id="studentId"> <br><br> 
+        <label for="name">Student Name:</label> 
+        <input type="text" id="name"> <br><br> 
+        <label for="course">Course:</label> 
+        <input type="text" id="course"> <br><br> 
+        <button onclick="insertStudent()">Submit Student</button> 
+        <h3>Server Response</h3> 
+        <p id="message"></p>
+    </div>
+</body>
+<script>
+    async function getStudents() {
+        const response = await fetch("http://127.0.0.1:8000/students", {
+                        method: "GET"
+                    });
+
+        const students = await response.json();
+
+        const list = document.getElementById("results");
+
+        list.textContent = JSON.stringify(students);
+    }
+
+    
+
+    async function insertStudent() {
+        // Get values from the input fields 
+        const id = document.getElementById("studentId").value
+        const name = document.getElementById("name").value; 
+        const course = document.getElementById("course").value; 
+        // Send data to FastAPI 
+        const response = await fetch("http://127.0.0.1:8000/students", { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify({id: id, name: name, course: course }) 
+        }); 
+        // Convert the server response to JavaScript 
+        const result = await response.json(); 
+        // Display the response 
+        document.getElementById("message").textContent = result.message + " Student: " + result.student.name + ", Course: " + result.student.course;
+    }
+</script>
+</html>
